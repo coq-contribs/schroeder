@@ -1,20 +1,4 @@
-(* This program is free software; you can redistribute it and/or      *)
-(* modify it under the terms of the GNU Lesser General Public License *)
-(* as published by the Free Software Foundation; either version 2.1   *)
-(* of the License, or (at your option) any later version.             *)
-(*                                                                    *)
-(* This program is distributed in the hope that it will be useful,    *)
-(* but WITHOUT ANY WARRANTY; without even the implied warranty of     *)
-(* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      *)
-(* GNU General Public License for more details.                       *)
-(*                                                                    *)
-(* You should have received a copy of the GNU Lesser General Public   *)
-(* License along with this program; if not, write to the Free         *)
-(* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA *)
-(* 02110-1301 USA                                                     *)
-
-
-(* Contribution to the Coq Library   V6.3 (July 1999)                    *)
+(* Contribution to the Coq Library   V6.3 (July 1999)                       *)
 (****************************************************************************)
 (*                 The Calculus of Inductive Constructions                  *)
 (*                                                                          *)
@@ -26,17 +10,21 @@
 (*                                Coq V5.11                                 *)
 (*                              Feb 2nd 1996                                *)
 (*                                                                          *)
+(*                (notations and layout updated March 2009)                 *)
 (****************************************************************************)
 (*                               Schroeder.v                                *)
 (****************************************************************************)
+(* This file is distributed under the terms of the                          *) 
+(* GNU Lesser General Public License Version 2.1                            *)
+(****************************************************************************)
 
 
-(*     If A is of cardinal less than B and conversely, then A and B          *)
-(*       are equipollent                                                     *)
-(*     In other words, if there is an injective map from A to B and          *)
-(*   an injective map from B to A then there exists a map from A onto B.     *)
+(**  If A is of cardinal less than B and conversely, then A and B           *)
+(**  are equipollent                                                        *)
+(**  In other words, if there is an injective map from A to B and           *)
+(**  an injective map from B to A then there exists a map from A onto B.    *)
 
-(*                (d'apres une demonstration de Fraenkel)                    *)
+(**                  (based on a proof by Fraenkel)                         *)
 
 Require Import Ensembles.      (* Ensemble, In, Included, Setminus *)
 Require Import Relations_1.    (* Relation, Transitive *)
@@ -51,44 +39,44 @@ Require Import Equipollence.
 Section Schroeder_Bernstein.
 
 
-(*****************************************************************************)
-(* We need the decidability of the belonging relation on sets                *)
-(* This is equivalent to classical logic                                     *)
+(****************************************************************************)
+(** We need the decidability of the belonging relation on sets              *)
+(** This is equivalent to classical logic                                   *)
 
 Definition in_or_not_in (U : Type) (x : U) (A : Ensemble U) :=
   classic (In U A x).
 
 
-(*****************************************************************************)
-(*  A and B are sets of elements in the univers U                            *)
+(****************************************************************************)
+(**  A and B are sets of elements in the univers U                          *)
 
 
 Variable U : Type.
 
 Let SU := Ensemble U.
 
-Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
+Variable A B : SU.  (* A and B are sets of elements in the univers U *)
 
 
   Section Bijection.
 
   (**************************************************************************)
-  (* On montre dans ce paragraphe que si f et g sont des injections resp    *)
-  (* de A dans B et de B dans A alors on peut trouver un sous-ensemble J de *)
-  (* A tq h qui est f sur J et g sur A\J est une bijection de A dans B      *)
+  (** We now show that if f and g are injections resp from A to B and from  *)
+  (** B to A, then there is a subset J of A s.t. h, defined to be f on A    *)
+  (** and the converse of g on A\J is a bijection from A to B               *)
 
-  Variable f g : Relation U.  (* f et g sont des relations *)
+  Variable f g : Relation U.  (* f and g are relations *)
 
-  Hypothesis f_inj : injection U A B f. (* f et g sont des injections *)
+  Hypothesis f_inj : injection U A B f. (* f and g are injections *)
   Hypothesis g_inj : injection U B A g.
 
   Let Imf : Ensemble U -> Ensemble U := Im U f.
   Let Img : Ensemble U -> Ensemble U := Im U g.
 
-  (* Construction de J tq g(B\f(J))=A\J *)
+  (** Constructing J s.t. g(B\f(J))=A\J *)
 
-    (* (Setminus U A C) designe la difference A\C         *)
-    (* (Included U A C) signifie que A est inclus dans C  *)
+    (** (Setminus U A C) denotes the difference A\C         *)
+    (** (Included U A C) means that A is included in C  *)
 
     Let F (C : SU) := Setminus U A (Img (Setminus U B (Imf C))).
 
@@ -97,15 +85,16 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
     Let J := Set_Sum U D.
 
 
-  (*  On va montrer que J correspond a ce que l'on cherche *)
+  (**  We show that so-built J is the subset we are looking for *)
 
-    (* J correspond exactement au point fixe de Tarski pour F, *)
-    (* fonction croissante relativement a l'inclusion          *)
+    (** J is Tarski's fix-point of F, a function which is growing *)
+    (** w.r.t. inclusion                                          *)
 
-    (* Lemma F est croissante *)
+    (** Lemma: F is growing *)
 
-      Lemma  (* Remark *) F_croissante :
+      Lemma F_growing :
        forall C C' : SU, Included U C C' -> Included U (F C) (F C').
+      Proof.
         intros; unfold F in |- *.
         apply Setminus_contravariant.
         unfold Img in |- *.
@@ -116,13 +105,14 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
         assumption.
       Qed.
 
-    (* On va montrer que F(J)=A\Img(B\Imf(J))=J *)
+    (** We show F(J)=A\Img(B\Imf(J))=J *)
 
-       (* D'abord l'inclusion dans un sens *)
+       (** First left-to-right inclusion *)
 
-         (*  Lemma J_dans_FJ (Included U J (F J))  *)
+         (** Lemma: J_is_in_FJ (Included U J (F J))  *)
 
-         Lemma  (* Remark *) J_dans_FJ : Included U J (F J).
+         Lemma J_is_in_FJ : Included U J (F J).
+         Proof.
            unfold J in |- *.
            apply Set_Sum_is_majoring.
            intros C C_in_D.
@@ -131,70 +121,71 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
            intro Incl_is_trans.
            unfold Transitive in Incl_is_trans.
            apply Incl_is_trans with (F C).
-           (* Que C est inclus dans (F C) *)
+           (* Show C subset of (F C) *)
              assumption.
-           (* Que (F C) inclus dans (F (Set_Sum U D)) *)
-             apply F_croissante.
+           (* Show (F C) subset of (F (Set_Sum U D)) *)
+             apply F_growing.
              apply Set_Sum_is_minoring.
              assumption.
          Qed.
 
-       (* Puis dans l'autre sens *)
+       (** Then right-to-left inclusion *)
 
-         (*  Lemma FJ_dans_J (Included U (F J) J)  *)
+         (** Lemma: FJ_is_in_J (Included U (F J) J)  *)
 
-         Lemma  (* Remark *) FJ_dans_J : Included U (F J) J.
+         Lemma FJ_is_in_J : Included U (F J) J.
+         Proof.
            unfold J in |- *.
            apply Set_Sum_is_minoring.
            red in |- *.
            red in |- *.
-           apply F_croissante.
-           exact J_dans_FJ.
+           apply F_growing.
+           exact J_is_in_FJ.
          Qed.
 
 
-  (* On montre que h qui est f sur J et g ailleurs est une bijection *)
+  (** We show that h, which is f on J and g elsewhere, is a bijection *)
 
     Inductive h (x y : U) : Prop :=
       | hl_intro : In U J x -> f x y -> h x y
       | hr_intro : Setminus U B (Imf J) y -> g y x -> h x y.
 
 
-  (*  Theorem h_bij (bijection U A B h)     *)
+  (** Theorem: h_bij (bijection U A B h) *)
 
   Theorem h_bij : bijection U A B h.
 
 
-    (* h est de A dans B *)
-    Lemma  (* Remark *) h1 : Rel U A B h.
-	Proof.
+    (** h is from A to B *)
+    Lemma h1 : Rel U A B h.
+    Proof.
         apply Rel_intro; do 2 intro; intro h_x_y.
-        (* h est sur A *) 
+        (* h is on A *) 
           elim h_x_y.
-          (* sur J : f est de A dans B *)
+          (* on J : f is from A to B *)
             elim f_inj.
             intro f_Rel; intros.
             elim f_Rel.
             intros f_sur_A f_sur_B.
             apply f_sur_A with y; assumption.
 
-        (* sur A\J: g est de B dans A *)
+        (* on A\J: g is from B to A *)
           elim g_inj.
           intro g_Rel; intros.
           elim g_Rel.
           intros g_sur_B g_sur_A.
           apply g_sur_A with y; assumption.
 
-      (* h est sur B *) 
+      (* h is on B *) 
         elim h_x_y.
-        (* sur J : f est de A dans B *)
+        (* On J : f is from A to B *)
           elim f_inj.
           intro f_Rel; intros.
           elim f_Rel.
           intros f_sur_A f_sur_B.
           apply f_sur_B with x; assumption.
 
-        (* sur A\J: g est de B dans A *)
+        (* On A\J: g is from B to A *)
         elim g_inj.
         intro g_Rel; intros.
         elim g_Rel.
@@ -204,21 +195,20 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
     Qed.
 
 
-    (* h verifie au_plus_une_im *)
-    Lemma  (* Remark *) h2 : au_plus_une_im U h.
-	Proof.
+    (** h satisfies to_at_most_one_output *)
+    Lemma h2 : to_at_most_one_output U h.
+    Proof.
       red in |- *; intros x y z h_x_y h_x_z.
       elim h_x_y.
 
-      (* sur J *)
+      (* on J *)
         elim h_x_z.
-        (* cas ou (h x y) et (h x z) se comporte comme f : correct *)
+        (* case when (h x y) or (h x z) behaves as f: ok *)
           elim f_inj.
-          unfold au_plus_une_im in |- *; intros f_Rel f_au_plus_1_im; intros.
+          unfold to_at_most_one_output in |- *; intros f_Rel f_au_plus_1_im; intros.
           apply f_au_plus_1_im with x; assumption.
 
-        (* Cas ou (h x y) se comporte comme f et
-                  (h x z) comme g : contradiction *)
+        (* case when (h x y) behaves as f and (h x z) as g: contradiction *)
           do 2 intro; intro x_in_J; intro.
           cut (Included U J (F J)).
             unfold Included in |- *; unfold F in |- *;
@@ -229,12 +219,11 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
             red in |- *.
             red in |- *.
             apply Im_intro with z; assumption.
-          exact J_dans_FJ.
+          exact J_is_in_FJ.
 
-      (* sur A\J *)
+      (* on A\J *)
         elim h_x_z.
-        (* Cas ou (h x y) se comporte comme g et
-                  (h x z) comme f : contradiction *)
+        (* case when (h x y) behaves as g and (h x z) as f: contradiction *)
           intro x_in_J; intros.
           cut (Included U J (F J)).
             unfold Included in |- *; unfold F in |- *;
@@ -245,43 +234,43 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
             red in |- *.
             red in |- *.
             apply Im_intro with y; assumption.
-          exact J_dans_FJ.
+          exact J_is_in_FJ.
 
 
-        (* cas ou (h x y) et (h x z) se comporte comme g : correct *) 
+        (* case when (h x y) and (h x z) behaves as g: ok *) 
           elim g_inj.
-          unfold au_plus_un_ant in |- *; do 3 intro; intro g_au_plus_1_ant;
+          unfold from_at_most_one_input in |- *; do 3 intro; intro g_au_plus_1_ant;
            intros.
           apply g_au_plus_1_ant with x; assumption.
 
     Qed.
 
 
-    (* h verifie au_moins_une_im *)
-    Lemma  (* Remark *) h3 : au_moins_une_im U A h.
-	Proof.
+    (** h satisfies to_at_least_one_output *)
+    Lemma h3 : to_at_least_one_output U A h.
+    Proof.
       red in |- *.
       intros.
       elim (in_or_not_in U x (Img (Setminus U B (Imf J)))).
 
-      (* sur A\J *)
+      (* on A\J *)
       unfold Img in |- *; intro x_in_Img.
       elim x_in_Img.
       intros y g_y_x H1.
       exists y.
       apply hr_intro; assumption.
 
-      (* sur J *)
+      (* on J *)
       intros.
-        (* De f fonction, on deduit f verifie au_moins_une_im *)
+        (* from f function, we deduce that f satisfies to_at_least_one_output *)
         elim f_inj.
-        unfold au_moins_une_im in |- *; do 2 intro; intro f_au_moins_1_im;
+        unfold to_at_least_one_output in |- *; do 2 intro; intro f_au_moins_1_im;
          intro.
         elim (f_au_moins_1_im x H).
         intros y f_x_y.
         exists y.
         apply hl_intro.
-          apply FJ_dans_J.
+          apply FJ_is_in_J.
           red in |- *; red in |- *; red in |- *.
           split; assumption.
         assumption.
@@ -289,23 +278,23 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
     Qed.
 
 
-    (* h verifie au_plus_un_ant *)
-    Lemma  (* Remark *) h4 : au_plus_un_ant U h.
-	Proof.
+    (** h satisfies from_at_most_one_input *)
+    Lemma h4 : from_at_most_one_input U h.
+    Proof.
       red in |- *; do 3 intro; intros h_x_z h_y_z.
       elim h_x_z.
 
-      (* sur J *)
+      (* on J *)
         elim h_y_z.
-        (* cas ou (h x y) et (h x z) se comporte comme f : correct *)
+        (* case when (h x y) and (h x z) behave as f: ok *)
           elim f_inj.
           intros.
           cut (forall x y z : U, f x z -> f y z -> x = y).
           intro Hyp; apply Hyp with z; assumption.
           assumption.
 
-        (* Montrer qu'on ne peut avoir (f x z) et (g z y) avec x dans J et
-            z hors de (Imf J) sans contradiction *)
+        (* show that one cannot have (f x z) and (g z y) with x in J and
+            z outside of (Imf J) without contradiction *)
           unfold Setminus in |- *; intro z_in_Setminus_B_Imf_J; intros.
           elim z_in_Setminus_B_Imf_J.
           intros z_in_B z_in_non_Imf_J.
@@ -314,10 +303,10 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
           red in |- *.
           apply Im_intro with x; assumption.
 
-      (* sur A\J *)
+      (* on A\J *)
         elim h_y_z.
-        (* Montrer qu'on ne peut avoir (f y z) et (g z x) avec x dans J et
-            z hors de (Imf J) sans contradiction *)
+        (* show that one cannot (f y z) and (g z x) with x in J and
+            z outside (Imf J) without contradiction *)
           unfold Setminus in |- *; do 2 intro; intro z_in_Setminus_B_Imf_J;
            intros.
           elim z_in_Setminus_B_Imf_J.
@@ -327,8 +316,8 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
           red in |- *.
           apply Im_intro with y; assumption.
 
-        (* De g fonction on deduit g verifie au_plus_une_im c'est-a-dire
-                                              au_plus_un_ant pour h *)
+        (* from g function, one deduces that g satisfies to_at_most_one_output,
+           which means from_at_most_one_input for h *)
           elim g_inj.
           intros.
           cut (forall z x y : U, g z x -> g z y -> x = y).
@@ -338,27 +327,27 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
     Qed.
 
 
-    (* h verifie au_moins_un_ant *)
-    Lemma  (* Remark *) h5 : au_moins_un_ant U B h.
-	Proof.
+    (** h satisfies from_at_least_one_input *)
+    Lemma h5 : from_at_least_one_input U B h.
+    Proof.
       red in |- *.
       intros.
       elim (in_or_not_in U y (Imf J)).
 
-      (* sur J *)
+      (* on J *)
       unfold Imf in |- *; intro y_in_Imf.
-        (* De f injective on deduit f verifie au_moins_un_ant *)
+        (* from f injective, one deduces that f satisfies from_at_least_one_input *)
           elim y_in_Imf.
           intros x f_x_y; intro.
           exists x.
           apply hl_intro; assumption.
 
-      (* sur A\J *)
+      (* on A\J *)
         intros.
-        (* De g injective on deduit g verifie au_moins_une_im c'est-a-dire
-                                              au_moins_un_ant pour h *)
+        (* from g injective, one deduces g satisfies to_at_least_one_output,
+           which means from_at_least_one_input for h *)
           elim g_inj.
-          unfold au_moins_une_im in |- *; do 2 intro; intro g_au_moins_1_im;
+          unfold to_at_least_one_output in |- *; do 2 intro; intro g_au_moins_1_im;
            intro.
           elim (g_au_moins_1_im y H).
           intros x g_y_x.
@@ -376,9 +365,11 @@ Variable A B : SU.  (* A et B sont des ensembles d'elements de l'univers U  *)
   End Bijection.
 
 
-(*    Le theoreme de Schroeder-Bernstein-Cantor     *)
+(**    Schroeder-Bernstein-Cantor Theorem     *)
 
-Theorem Schroeder : inf_card U A B -> inf_card U B A -> equipollence U A B.
+Theorem Schroeder : A <=_card B -> B <=_card A -> A =_card B.
+
+Proof.
 
   intros A_inf_B B_inf_A.
   elim A_inf_B.
