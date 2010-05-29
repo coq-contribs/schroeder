@@ -356,10 +356,10 @@ Variable A B : SU.  (* A and B are sets of elements in the univers U *)
           red in |- *.
           split; assumption.
           assumption.
-
     Qed.
 
-	Resume h_bij.
+    (** We can now resume the proof of h_bij *)
+
     Proof bijection_intro U A B h h1 h2 h3 h4 h5.
 
   End Bijection.
