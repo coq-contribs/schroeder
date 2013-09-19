@@ -361,7 +361,9 @@ Variable A B : SU.  (* A and B are sets of elements in the univers U *)
 
     (** We can now resume the proof of h_bij *)
 
-    Proof bijection_intro U A B h h1 h2 h3 h4 h5.
+    Proof.
+    exact (bijection_intro U A B h h1 h2 h3 h4 h5).
+    Qed.
 
   End Bijection.
 
