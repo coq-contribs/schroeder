@@ -36,6 +36,8 @@ Require Import Sums.
 Require Import Functions.
 Require Import Equipollence.
 
+Set Nested Proofs Allowed.
+
 Section Schroeder_Bernstein.
 
 
